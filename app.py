@@ -9,34 +9,50 @@ from linebot.models import MessageEvent, TextMessage, TextSendMessage
 
 from fsm import TocMachine
 from utils import send_text_message
+import Gen1A2B
 
 load_dotenv()
 
-
 machine = TocMachine(
-    states=["user", "state1", "state2"],
+    states=["user", "play_1A2B"] + Gen1A2B.genStates(Gen1A2B.Game1A2B_N),
     transitions=[
-        {
-            "trigger": "advance",
-            "source": "user",
-            "dest": "state1",
-            "conditions": "is_going_to_state1",
-        },
-        {
-            "trigger": "advance",
-            "source": "user",
-            "dest": "state2",
-            "conditions": "is_going_to_state2",
-        },
-        {"trigger": "go_back", "source": ["state1", "state2"], "dest": "user"},
-    ],
+        {"trigger": "advance", "source": "user", "dest": "play_1A2B",
+            "conditions": "is_going_to_play_1A2B"},
+    ]
+    + Gen1A2B.genTransitions("play_1A2B", Gen1A2B.Game1A2B_N),
     initial="user",
     auto_transitions=False,
     show_conditions=True,
 )
 
-app = Flask(__name__, static_url_path="")
+# for obj in Gen1A2B.genHandlers(N):
+#     for k, v in obj.items():
+#         setattr(TocMachine, k, v)
+#         print(k, v)
 
+print(hasattr(machine, 'is_going_to_state_1A2B_00000001'))
+
+# def foo(self, event):
+#     text = event.message.text
+#     result = '4A0B'
+#     print('on_enter2_foo', text)
+#     if (result == '4A0B'):
+#         reply_token = event.reply_token
+#         send_text_message(
+#             reply_token, TextSendMessage(text="You won!:D"))
+#     else:
+#         reply_token = event.reply_token
+#         send_text_message(
+#             reply_token, TextSendMessage(text=result))
+
+
+# setattr(TocMachine, 'on_enter_state1A2B_00000001', foo)
+
+# TocMachine.on_enter_state_1A2B_00000001(None, None)
+
+# setattr(TocMachine, 'is_going_to_state3', is_going_to_state3)
+
+app = Flask(__name__, static_url_path="")
 
 # get channel_secret and channel_access_token from your environment variable
 channel_secret = os.getenv("LINE_CHANNEL_SECRET", None)
@@ -104,7 +120,8 @@ def webhook_handler():
         print(f"REQUEST BODY: \n{body}")
         response = machine.advance(event)
         if response == False:
-            send_text_message(event.reply_token, "Not Entering any State")
+            send_text_message(event.reply_token, TextSendMessage(
+                text="Not Entering any State"))
 
     return "OK"
 
