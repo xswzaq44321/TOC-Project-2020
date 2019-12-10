@@ -14,43 +14,13 @@ import Gen1A2B
 load_dotenv()
 
 machine = TocMachine(
-    states=["user", "play_1A2B"] + Gen1A2B.genStates(Gen1A2B.Game1A2B_N),
-    transitions=[
-        {"trigger": "advance", "source": "user", "dest": "play_1A2B",
-            "conditions": "is_going_to_play_1A2B"},
-    ]
-    + Gen1A2B.genTransitions("play_1A2B", Gen1A2B.Game1A2B_N),
+    states=["user"] + Gen1A2B.genStates(Gen1A2B.Game1A2B_N),
+    transitions=[] + Gen1A2B.genTransitions("user", Gen1A2B.Game1A2B_N),
     initial="user",
     auto_transitions=False,
     show_conditions=True,
 )
 
-# for obj in Gen1A2B.genHandlers(N):
-#     for k, v in obj.items():
-#         setattr(TocMachine, k, v)
-#         print(k, v)
-
-print(hasattr(machine, 'is_going_to_state_1A2B_00000001'))
-
-# def foo(self, event):
-#     text = event.message.text
-#     result = '4A0B'
-#     print('on_enter2_foo', text)
-#     if (result == '4A0B'):
-#         reply_token = event.reply_token
-#         send_text_message(
-#             reply_token, TextSendMessage(text="You won!:D"))
-#     else:
-#         reply_token = event.reply_token
-#         send_text_message(
-#             reply_token, TextSendMessage(text=result))
-
-
-# setattr(TocMachine, 'on_enter_state1A2B_00000001', foo)
-
-# TocMachine.on_enter_state_1A2B_00000001(None, None)
-
-# setattr(TocMachine, 'is_going_to_state3', is_going_to_state3)
 
 app = Flask(__name__, static_url_path="")
 
