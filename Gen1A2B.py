@@ -85,8 +85,10 @@ def genTransitions(root, n):
 def checkAB(ans, guess):
     A = 0
     B = 0
-    matchedGuess = [False, False, False, False]
-    matchedAns = [False, False, False, False]
+    matchedGuess = [False] * len(ans)
+    matchedAns = [False] * len(ans)
+    if(not isinstance(guess, int) and len(guess) != len(ans)):
+        return 'Nani the fuck?'
     for i in range(len(guess)):
         if (guess[i] == ans[i]):
             A = A + 1
