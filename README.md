@@ -3,23 +3,25 @@
 A Line bot based on a finite state machine
 Let you play 1A2B
 
-### Deploy
+## Deploy
 deploy on AWS EC2
 
-### Finite State Machine Diagram
+## Finite State Machine Diagram
 ![show-fsm](./img/show-fsm.png)
 
-## How to play
-Type in "play 1A2B" to start the game.
-Type in "$a_1a_2a_3a_4$" to guess the number. Ex. "5267"
-Click **yes** or **no** after winning the game to continue or exit.
+## How to play (Usage)
+* Type in **"play 1A2B"** to start the game.
+* Type in **"$a_1a_2a_3a_4$"** to guess the number. Ex. "5267"
+* Type in **"replay"** to start a new game.
+* Type in **"quit"** to rage quit.
+* Click **yes** or **no** after winning the game to continue or exit.
 
-#### Rule
+### Rule
 The number range is [0~3], number may appear more than once.
 We'll give you hint in the form of XAYB, "B" means the number is matched but not in the right position, while "A" means it's in the right position.
 For example, answer is 8123 and player guess 1052, then the hint will be 0A2B. Note that if answer is 5543, and player guess 5255, the hint will be 1A1B.
 
-### States
+## States
 - **user**
 	Initial state
 - **play_1A2B**
@@ -38,6 +40,11 @@ For example, answer is 8123 and player guess 1052, then the hint will be 0A2B. N
 	Dynamicall generated states.
 	Entered after player *didn't* guessed the answer.
 
-### About program
+## About Program
+
+### Dynamic generate states
 In Gen1A2B.py file, these's a variable called ***Game1A2B_N*** which controlls the number range of our 1A2B game. In deploy version, it's set to 4, but it have no problem going up to 10.
 The state count in this program can be calculated by $Game1A2B\_N^4*3+3$. A number of 4 yields 771 states, a number of 10 yields 30003 states.
+
+### Multiple users
+Different user has independent datas, states.
