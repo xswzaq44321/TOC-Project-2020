@@ -82,7 +82,6 @@ def genTransitions(root, n):
                     transitions.append(objCorrectBack)
                     transitions.append(objWrongBack)
     transitions.append(objBack)
-    print(objBack['source'])
     transitions.append(objExit)
     transitions.append({
         "trigger": "advance",
@@ -104,9 +103,8 @@ def checkAB(ans, guess):
     B = 0
     matchedGuess = [False] * len(ans)
     matchedAns = [False] * len(ans)
-    if(not isinstance(guess, int) or len(guess) != len(ans)):
+    if((not guess.isdigit()) or (len(guess) != len(ans))):
         return 'Nani the fuck?'
-    print(guess, range(0, Game1A2B_N))
     for i in range(len(guess)):
         if(int(guess[i]) not in range(0, Game1A2B_N)):
             return 'Number out of range [0~%d].' % (Game1A2B_N - 1)

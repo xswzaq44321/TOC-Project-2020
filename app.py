@@ -22,6 +22,16 @@ machine = TocMachine(
 )
 
 
+def makeTocMachine(N):
+    return TocMachine(
+        states=["user"] + Gen1A2B.genStates(N),
+        transitions=[] + Gen1A2B.genTransitions("user", N),
+        initial="user",
+        auto_transitions=False,
+        show_conditions=True,
+    )
+
+
 app = Flask(__name__, static_url_path="")
 
 # get channel_secret and channel_access_token from your environment variable
@@ -65,6 +75,9 @@ def callback():
     return "OK"
 
 
+userMachines = dict()
+
+
 @app.route("/webhook", methods=["POST"])
 def webhook_handler():
     signature = request.headers["X-Line-Signature"]
@@ -86,12 +99,16 @@ def webhook_handler():
             continue
         if not isinstance(event.message.text, str):
             continue
-        print(f"\nFSM STATE: {machine.state}")
+        user_id = event.source.user_id
+        if (user_id not in userMachines):
+            userMachines[user_id] = makeTocMachine(Gen1A2B.Game1A2B_N)
+        userMachine = userMachines[user_id]
+        print(f"\nFSM STATE: {userMachine.state}")
         print(f"REQUEST BODY: \n{body}")
-        response = machine.advance(event)
+        response = userMachine.advance(event)
         if response == False:
             send_text_message(event.reply_token, TextSendMessage(
-                text="Not Entering any State"))
+                text="我看不懂QQ"))
 
     return "OK"
 
