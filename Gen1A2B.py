@@ -27,6 +27,18 @@ def genTransitions(root, n):
         "dest": "play_1A2B",
         "conditions": "is_going_to_play_1A2B"
     })
+    objBack = {
+        "source": [],
+        "trigger": "advance",
+        "dest": "play_1A2B",
+        "conditions": "is_going_to_replay_1A2B"
+    }
+    objExit = {
+        "source": [],
+        "trigger": "advance",
+        "dest": root,
+        "conditions": "is_going_to_quit_1A2B"
+    }
     for i in range(0, n):
         for j in range(0, n):
             for k in range(0, n):
@@ -41,6 +53,8 @@ def genTransitions(root, n):
                         # "conditions": conditions
                     }
                     transitions.append(obj)
+                    objBack['source'].append(dest)
+                    objExit['source'].append(dest)
                     objCorrect = {
                         "trigger": "advance",
                         "source": dest,
@@ -67,6 +81,9 @@ def genTransitions(root, n):
                     }
                     transitions.append(objCorrectBack)
                     transitions.append(objWrongBack)
+    transitions.append(objBack)
+    print(objBack['source'])
+    transitions.append(objExit)
     transitions.append({
         "trigger": "advance",
         "source": "state_1A2B_winning",
@@ -87,7 +104,7 @@ def checkAB(ans, guess):
     B = 0
     matchedGuess = [False] * len(ans)
     matchedAns = [False] * len(ans)
-    if(not isinstance(guess, int) and len(guess) != len(ans)):
+    if(not isinstance(guess, int) or len(guess) != len(ans)):
         return 'Nani the fuck?'
     print(guess, range(0, Game1A2B_N))
     for i in range(len(guess)):
@@ -119,12 +136,26 @@ def genHandlers(n):
 
     def on_enter_play_1A2B(self, event):
         reply_token = event.reply_token
-        send_text_message(reply_token, TextSendMessage("Let's play 1A2B.\nRange [0~%d]*4." % (Game1A2B_N - 1)))
+        send_text_message(reply_token, TextSendMessage(
+            "Let's play 1A2B.\nRange [0~%d]*4." % (Game1A2B_N - 1)))
         comb = "%d%d%d%d" % (random.randint(0, n - 1), random.randint(0, n - 1),
                              random.randint(0, n - 1), random.randint(0, n - 1))
-        print(comb)
+        print("1A2B answer =", comb)
         getattr(self, "go_to_state_1A2B_%s" % comb)(event)
-        # self.go_to_state_1A2B_0000(event)
+
+    def is_going_to_replay_1A2B(self, event):
+        text = event.message.text
+        return text.lower() == "replay"
+
+    def is_going_to_quit_1A2B(self, event):
+        text = event.message.text
+        return text.lower() == "quit"
+    handlers.append({
+        "is_going_to_replay_1A2B": is_going_to_replay_1A2B
+    })
+    handlers.append({
+        "is_going_to_quit_1A2B": is_going_to_quit_1A2B
+    })
     handlers.append({
         "is_going_to_play_1A2B": is_going_to_play_1A2B
     })
@@ -208,7 +239,10 @@ def genHandlers(n):
                     def is_going_to_wrong_gen(comb):
                         def foo(self, event):
                             text = event.message.text
-                            # print(checkAB(text.lower()) != '4A0B')
+                            if (text.lower() == "replay"):
+                                return False
+                            elif(text.lower() == "quit"):
+                                return False
                             return checkAB(comb, text.lower()) != '4A0B'
                         return foo
                     is_going_to_wrong_foo = is_going_to_wrong_gen(comb)
