@@ -89,6 +89,10 @@ def checkAB(ans, guess):
     matchedAns = [False] * len(ans)
     if(not isinstance(guess, int) and len(guess) != len(ans)):
         return 'Nani the fuck?'
+    print(guess, range(0, Game1A2B_N))
+    for i in range(len(guess)):
+        if(int(guess[i]) not in range(0, Game1A2B_N)):
+            return 'Number out of range [0~%d].' % (Game1A2B_N - 1)
     for i in range(len(guess)):
         if (guess[i] == ans[i]):
             A = A + 1
@@ -115,7 +119,7 @@ def genHandlers(n):
 
     def on_enter_play_1A2B(self, event):
         reply_token = event.reply_token
-        send_text_message(reply_token, TextSendMessage("Let's play 1A2B"))
+        send_text_message(reply_token, TextSendMessage("Let's play 1A2B.\nRange [0~%d]*4." % (Game1A2B_N - 1)))
         comb = "%d%d%d%d" % (random.randint(0, n - 1), random.randint(0, n - 1),
                              random.randint(0, n - 1), random.randint(0, n - 1))
         print(comb)
